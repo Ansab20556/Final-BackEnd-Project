@@ -17,5 +17,3 @@ require __DIR__ . '/../routes/web.php';
 // Dispatch current request
 // echo $_SERVER['REQUEST_URI'];
 $router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
-
-

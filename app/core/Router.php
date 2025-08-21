@@ -39,7 +39,8 @@ final class Router
         }
 
         http_response_code(404);
-        echo "404 Not Found";
+        require __DIR__ . '/../views/errors/404.php';
+        exit;
     }
 
     private function norm(string $p): string
