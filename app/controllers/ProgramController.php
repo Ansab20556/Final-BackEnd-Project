@@ -75,4 +75,18 @@ class ProgramController {
         header("Location: /oraganization-mvc/public/programs");
         exit;
     }
+
+
+    function apiIndex() {
+            header('Content-Type: application/json');
+            $program = new \App\Models\Program();
+            echo json_encode($program->all());
+    }
+
+        // حذف برنامج بالـ ID
+    function apiDelete($id) {
+            $program = new \App\Models\Program();
+            $program->delete($id);
+            echo json_encode(['success' => true]);
+    }
 }
