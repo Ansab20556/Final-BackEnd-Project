@@ -3,8 +3,10 @@ namespace App\Controllers;
 
 use App\Core\App;
 
-class AuthController {
-    public function login() {
+class AuthController 
+{
+    public function login() 
+    {
         header("Access-Control-Allow-Origin: *");
         header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
         header("Access-Control-Allow-Headers: Content-Type");
@@ -20,13 +22,16 @@ class AuthController {
         $stmt->execute(['email' => $email]);
         $user = $stmt->fetch();
 
-        if ($user && password_verify($password, $user['password'])) {
-            // نجاح تسجيل الدخول
-            echo json_encode([
-                'token' => bin2hex(random_bytes(16)),
-                'role' => $user['role']
-            ]);
-        } else {
+        if ($user && password_verify($password, $user['password'])) 
+            {
+                // نجاح تسجيل الدخول
+                echo json_encode([
+                    'token' => bin2hex(random_bytes(16)),
+                    'role' => $user['role']
+                ]);
+            } 
+        else 
+        {
             http_response_code(401);
             echo json_encode(['error' => 'البريد أو كلمة المرور غير صحيحة']);
         }
