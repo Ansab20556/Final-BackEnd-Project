@@ -40,9 +40,11 @@
                         <td class="py-2 px-4"><?= $prog['region'] ?></td>
                         <td class="py-2 px-4 flex gap-2 justify-center">
                             <a href="/oraganization-mvc/public/programs/<?= $prog['program_id'] ?>/edit" class="px-3 py-1 bg-amber-500 text-white rounded hover:bg-amber-600">تعديل</a>
-                            <form method="POST" action="/oraganization-mvc/public/programs/<?= $prog['program_id'] ?>/delete" onsubmit="return confirm('هل تريد حذف هذا البرنامج؟');">
+                            <form method="POST" action="/oraganization-mvc/public/programs/<?= $prog['program_id'] ?>" onsubmit="return confirm('هل تريد حذف هذا البرنامج؟');">
+                                <input type="hidden" name="_method" value="DELETE">
                                 <button type="submit" class="px-3 py-1 bg-rose-600 text-white rounded hover:bg-rose-700">حذف</button>
                             </form>
+
                         </td>
                     </tr>
                 <?php endforeach; ?>
