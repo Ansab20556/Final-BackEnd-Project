@@ -8,7 +8,8 @@
     </head>
     <body class="bg-gray-100">
         <div class="max-w-xl mx-auto p-6">
-            <form method="POST" action="/oraganization-mvc/public/donations/<?= $don['donation_id'] ?>/update" class="space-y-4 bg-white p-6 rounded-lg shadow">
+            <form method="POST" action="/oraganization-mvc/public/donations/<?= $don['donation_id'] ?>">
+                <input type="hidden" name="_method" value="PUT">
                 <h1 class="text-2xl font-bold mb-6">تعديل التبرع</h1>
 
                 <input type="text" name="donor_name" value="<?= htmlspecialchars($don['donor_name']) ?>" class="w-full border rounded px-3 py-2" required>
