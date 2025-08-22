@@ -1,0 +1,81 @@
+<?php
+
+namespace App\Controllers;
+
+use App\Models\Donation;
+
+class DonationController
+{
+    function index()
+    {
+        $donation = new Donation();
+        $donations = $donation->all();
+        require __DIR__ . '/../views/donations/index.php';
+    }
+
+    function create()
+    {
+        require __DIR__ . '/../views/donations/create.php';
+    }
+
+    function store()
+    {
+        $donation = new Donation();
+
+        $donor_name = trim($_POST['donor_name'] ?? '');
+        $donation_type = trim($_POST['donation_type'] ?? '');
+        $amount = $_POST['amount'] ?? 0;
+        $item_description = trim($_POST['item_description'] ?? '');
+        $donation_date = $_POST['donation_date'] ?? '';
+        $confirmed = isset($_POST['confirmed']) ? 1 : 0;
+
+        if ($donor_name === '' || $donation_type === '' || $donation_date === '') {
+            $error = "الرجاء تعبئة الحقول المطلوبة";
+            require __DIR__ . '/../views/donations/create.php';
+            return;
+        }
+
+        $donation->create($donor_name, $donation_type, $amount, $item_description, $donation_date, $confirmed);
+
+        header("Location: /oraganization-mvc/public/donations");
+        exit;
+    }
+
+    function edit($id)
+    {
+        $donation = new Donation();
+        $don = $donation->find($id);
+        if (!$don) {
+            http_response_code(404);
+            echo "Donation not found";
+            return;
+        }
+        require __DIR__ . '/../views/donations/edit.php';
+    }
+
+    function update($id)
+    {
+        $donation = new Donation();
+
+        $donor_name = trim($_POST['donor_name'] ?? '');
+        $donation_type = trim($_POST['donation_type'] ?? '');
+        $amount = $_POST['amount'] ?? 0;
+        $item_description = trim($_POST['item_description'] ?? '');
+        $donation_date = $_POST['donation_date'] ?? '';
+        $confirmed = isset($_POST['confirmed']) ? 1 : 0;
+
+        $donation->update($id, $donor_name, $donation_type, $amount, $item_description, $donation_date, $confirmed);
+
+        header("Location: /oraganization-mvc/public/donations");
+        exit;
+    }
+
+    function delete($id)
+    {
+        $donation = new Donation();
+        $donation->delete($id);
+
+        header("Location: /oraganization-mvc/public/donations");
+        exit;
+    }
+}
