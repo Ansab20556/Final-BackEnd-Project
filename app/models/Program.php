@@ -4,21 +4,25 @@ namespace App\Models;
 
 use App\Core\App;
 
-class Program {
+class Program 
+{
 
-    function all() {
+    function all() 
+    {
         $stm = App::db()->prepare("SELECT * FROM programs");
         $stm->execute();
         return $stm->fetchAll();
     }
 
-    function find($id) {
+    function find($id) 
+    {
         $stm = App::db()->prepare("SELECT * FROM programs WHERE program_id = :id");
         $stm->execute(['id' => $id]);
         return $stm->fetch();
     }
 
-    function create($title, $descrip, $start_date, $end_date, $type, $region) {
+    function create($title, $descrip, $start_date, $end_date, $type, $region) 
+    {
         $stm = App::db()->prepare("INSERT INTO programs(title, descrip, startt_date, end_date, typ, region)
                                    VALUES(:title, :descrip, :startt_date, :end_date, :typ, :region)");
         $stm->execute([
@@ -31,7 +35,8 @@ class Program {
         ]);
     }
 
-    function update($id, $title, $descrip, $start_date, $end_date, $type, $region) {
+    function update($id, $title, $descrip, $start_date, $end_date, $type, $region) 
+    {
         $stm = App::db()->prepare("UPDATE programs
                                    SET title = :title,
                                        descrip = :descrip,
@@ -51,7 +56,8 @@ class Program {
         ]);
     }
 
-    function delete($id) {
+    function delete($id) 
+    {
         $stm = App::db()->prepare("DELETE FROM programs WHERE program_id = :id");
         $stm->execute(['id' => $id]);
     }
