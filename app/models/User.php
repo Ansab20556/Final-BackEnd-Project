@@ -5,7 +5,6 @@ use App\Core\App;
 
 class User 
 {
-
     public function findByEmail($email) 
     {
         $stmt = App::db()->prepare("SELECT * FROM users WHERE email = ?");
@@ -30,7 +29,9 @@ class User
     function create($username, $email, $password, $role) 
     {
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-        $stm = App::db()->prepare("INSERT INTO users(username, email, password, role) VALUES(:username, :email, :password, :role)");
+        $stm = App::db()->prepare(
+            "INSERT INTO users(username, email, password, role) VALUES(:username, :email, :password, :role)"
+        );
         $stm->execute([
             'username' => $username,
             'email' => $email,
@@ -41,14 +42,28 @@ class User
 
     function update($id, $username, $email, $password, $role) 
     {
-        $stm = App::db()->prepare("UPDATE users SET username = :username, email = :email, password = :password, role = :role WHERE id = :id");
-        $stm->execute([
-            'username' => $username,
-            'email' => $email,
-            'password' => password_hash($password, PASSWORD_DEFAULT),
-            'role' => $role,
-            'id' => $id
-        ]);
+        if ($password && $password !== '') {
+            $stm = App::db()->prepare(
+                "UPDATE users SET username = :username, email = :email, password = :password, role = :role WHERE id = :id"
+            );
+            $stm->execute([
+                'username' => $username,
+                'email' => $email,
+                'password' => password_hash($password, PASSWORD_DEFAULT),
+                'role' => $role,
+                'id' => $id
+            ]);
+        } else {
+            $stm = App::db()->prepare(
+                "UPDATE users SET username = :username, email = :email, role = :role WHERE id = :id"
+            );
+            $stm->execute([
+                'username' => $username,
+                'email' => $email,
+                'role' => $role,
+                'id' => $id
+            ]);
+        }
     }
 
     function delete($id) 
