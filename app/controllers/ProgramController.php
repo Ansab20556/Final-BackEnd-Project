@@ -4,19 +4,23 @@ namespace App\Controllers;
 
 use App\Models\Program;
 
-class ProgramController {
+class ProgramController 
+{
 
-    function index() {
+    function index() 
+    {
         $program = new Program();
         $programs = $program->all();
         require __DIR__ . '/../views/programs/index.php';
     }
 
-    function create() {
+    function create() 
+    {
         require __DIR__ . '/../views/programs/create.php';
     }
 
-    function store() {
+    function store() 
+    {
         $program = new Program();
 
         $title = trim($_POST['title'] ?? '');
@@ -27,11 +31,12 @@ class ProgramController {
         $region = trim($_POST['region'] ?? '');
 
         if ($title === '' || $descrip === '' || $start_date === '' ||
-            $end_date === '' || $type === '' || $region === '') {
-            $error = 'الرجاء تعبئة كل الحقول.';
-            require __DIR__ . '/../views/programs/create.php';
-            return;
-        }
+            $end_date === '' || $type === '' || $region === '') 
+            {
+                $error = 'الرجاء تعبئة كل الحقول.';
+                require __DIR__ . '/../views/programs/create.php';
+                return;
+            }
 
         $program->create($title, $descrip, $start_date, $end_date, $type, $region);
 
@@ -39,20 +44,23 @@ class ProgramController {
         exit;
     }
 
-    function edit($id) {
+    function edit($id) 
+    {
         $program = new Program();
         $prog = $program->find($id);
 
-        if (!$prog) {
-            http_response_code(404);
-            echo "Program not found";
-            return;
-        }
+        if (!$prog) 
+            {
+                http_response_code(404);
+                echo "Program not found";
+                return;
+            }
 
         require __DIR__ . '/../views/programs/edit.php';
     }
 
-    function update($id) {
+    function update($id) 
+    {
         $program = new Program();
 
         $title = trim($_POST['title'] ?? '');
@@ -68,7 +76,8 @@ class ProgramController {
         exit;
     }
 
-    function delete($id) {
+    function delete($id) 
+    {
         $program = new Program();
         $program->delete($id);
 
@@ -77,14 +86,16 @@ class ProgramController {
     }
 
 
-    function apiIndex() {
+    function apiIndex() 
+    {
             header('Content-Type: application/json');
             $program = new \App\Models\Program();
             echo json_encode($program->all());
     }
 
         // حذف برنامج بالـ ID
-    function apiDelete($id) {
+    function apiDelete($id) 
+    {
             $program = new \App\Models\Program();
             $program->delete($id);
             echo json_encode(['success' => true]);
