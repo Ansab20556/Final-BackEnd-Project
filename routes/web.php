@@ -3,6 +3,7 @@
 use App\Controllers\ProgramController;
 use App\Controllers\AuthController;
 use App\Controllers\UserController;
+use App\Controllers\OrganizationController;
 use App\Core\Router;
 
 $router = new Router();
@@ -29,3 +30,11 @@ $router->post('/oraganization-mvc/public/users/{id}/delete', [UserController::cl
 
 $router->get('/oraganization-mvc/public/api/workfields', [ProgramController::class, 'apiIndex']);
 $router->post('/oraganization-mvc/public/api/workfields/{id}/delete', [ProgramController::class, 'apiDelete']);
+
+
+$router->get('/oraganization-mvc/public/organization', [OrganizationController::class, 'index']);
+$router->get('/oraganization-mvc/public/organization/create', [OrganizationController::class, 'create']);
+$router->post('/oraganization-mvc/public/organization', [OrganizationController::class, 'store']);
+$router->get('/oraganization-mvc/public/organization/{id}/edit', [OrganizationController::class, 'edit']);
+$router->post('/oraganization-mvc/public/organization/{id}/update', [OrganizationController::class, 'update']);
+$router->post('/oraganization-mvc/public/organization/{id}/delete', [OrganizationController::class, 'delete']);
