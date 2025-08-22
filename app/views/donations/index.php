@@ -37,8 +37,12 @@
                             <td class="py-2 px-4"><?= $don['confirmed'] ? "✅" : "❌" ?></td>
                             <td class="py-2 px-4 flex gap-2 justify-center">
                                 <a href="/oraganization-mvc/public/donations/<?= $don['donation_id'] ?>/edit" class="px-3 py-1 bg-amber-500 text-white rounded hover:bg-amber-600">تعديل</a>
-                                <form method="POST" action="/oraganization-mvc/public/donations/<?= $don['donation_id'] ?>/delete" onsubmit="return confirm('هل تريد حذف هذا التبرع؟');">
-                                    <button type="submit" class="px-3 py-1 bg-rose-600 text-white rounded hover:bg-rose-700">حذف</button>
+                                
+                                <form method="POST" action="/oraganization-mvc/public/donations/<?= $don['donation_id'] ?>" 
+                                    style="display:inline;" 
+                                    onsubmit="return confirm('هل تريد حذف هذا التبرع؟');">
+                                    <input type="hidden" name="_method" value="DELETE">
+                                    <button type="submit" class="px-2 py-1 bg-red-600 text-white rounded">حذف</button>
                                 </form>
                             </td>
                         </tr>
