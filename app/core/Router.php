@@ -19,24 +19,29 @@ final class Router
     {
         $path = $this->norm(parse_url($uri, PHP_URL_PATH) ?: '/');
 
-        foreach ($this->routes[$method] as $route => $handler) {
+        foreach ($this->routes[$method] as $route => $handler) 
+            {
 
-            $pattern = preg_replace('#\{(\w+)\}#', '(?P<$1>[^/]+)', $route);
-            $pattern = "#^$pattern$#";
+                $pattern = preg_replace('#\{(\w+)\}#', '(?P<$1>[^/]+)', $route);
+                $pattern = "#^$pattern$#";
 
-            if (preg_match($pattern, $path, $matches)) {
+                if (preg_match($pattern, $path, $matches)) 
+                    {
 
-                $params = array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);
+                        $params = array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);
 
-                if (is_array($handler)) {
-                    [$class, $action] = $handler;
-                    (new $class())->$action(...array_values($params));
-                } else {
-                    $handler(...array_values($params));
-                }
-                return;
+                        if (is_array($handler)) 
+                            {
+                                [$class, $action] = $handler;
+                                (new $class())->$action(...array_values($params));
+                            } 
+                            else 
+                            {
+                                $handler(...array_values($params));
+                            }
+                            return;
+                    }
             }
-        }
 
         http_response_code(404);
         require __DIR__ . '/../views/errors/404.php';
