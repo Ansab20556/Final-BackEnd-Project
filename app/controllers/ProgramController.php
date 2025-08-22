@@ -1,12 +1,10 @@
-<?php 
-
+<?php
 namespace App\Controllers;
 
 use App\Models\Program;
 
 class ProgramController 
 {
-
     function index() 
     {
         $program = new Program();
@@ -22,7 +20,6 @@ class ProgramController
     function store() 
     {
         $program = new Program();
-
         $title = trim($_POST['title'] ?? '');
         $descrip = trim($_POST['desc'] ?? '');
         $start_date = trim($_POST['start_date'] ?? '');
@@ -30,13 +27,11 @@ class ProgramController
         $type = trim($_POST['type'] ?? '');
         $region = trim($_POST['region'] ?? '');
 
-        if ($title === '' || $descrip === '' || $start_date === '' ||
-            $end_date === '' || $type === '' || $region === '') 
-            {
-                $error = 'الرجاء تعبئة كل الحقول.';
-                require __DIR__ . '/../views/programs/create.php';
-                return;
-            }
+        if ($title === '' || $descrip === '' || $start_date === '' || $end_date === '' || $type === '' || $region === '') {
+            $error = 'الرجاء تعبئة كل الحقول.';
+            require __DIR__ . '/../views/programs/create.php';
+            return;
+        }
 
         $program->create($title, $descrip, $start_date, $end_date, $type, $region);
 
@@ -48,29 +43,30 @@ class ProgramController
     {
         $program = new Program();
         $prog = $program->find($id);
-
-        if (!$prog) 
-            {
-                http_response_code(404);
-                echo "Program not found";
-                return;
-            }
-
+        if (!$prog) {
+            http_response_code(404);
+            echo "Program not found";
+            return;
+        }
         require __DIR__ . '/../views/programs/edit.php';
     }
 
     function update($id) 
     {
         $program = new Program();
-
-        $title = trim($_POST['title'] ?? '');
-        $descrip = trim($_POST['desc'] ?? '');
-        $start_date = trim($_POST['start_date'] ?? '');
-        $end_date = trim($_POST['end_date'] ?? '');
-        $type = trim($_POST['type'] ?? '');
-        $region = trim($_POST['region'] ?? '');
-
-        $program->update($id, $title, $descrip, $start_date, $end_date, $type, $region);
+        $data = $_POST;
+        if (empty($data) && $_SERVER['CONTENT_TYPE'] === 'application/json') {
+            $data = json_decode(file_get_contents("php://input"), true);
+        }
+        $program->update(
+            $id,
+            $data['title'] ?? '',
+            $data['desc'] ?? '',
+            $data['start_date'] ?? '',
+            $data['end_date'] ?? '',
+            $data['type'] ?? '',
+            $data['region'] ?? ''
+        );
 
         header("Location: /oraganization-mvc/public/programs");
         exit;
@@ -85,19 +81,19 @@ class ProgramController
         exit;
     }
 
-
+    // REST API
     function apiIndex() 
     {
-            header('Content-Type: application/json');
-            $program = new \App\Models\Program();
-            echo json_encode($program->all());
+        header('Content-Type: application/json');
+        $program = new Program();
+        echo json_encode($program->all());
     }
 
-        // حذف برنامج بالـ ID
     function apiDelete($id) 
     {
-            $program = new \App\Models\Program();
-            $program->delete($id);
-            echo json_encode(['success' => true]);
+        header('Content-Type: application/json');
+        $program = new Program();
+        $program->delete($id);
+        echo json_encode(['success' => true]);
     }
 }
