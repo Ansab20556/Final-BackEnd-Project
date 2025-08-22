@@ -13,9 +13,9 @@ http_response_code(404);
         <div class="text-center">
             <h1 class="text-6xl font-bold text-red-600 mb-4">404</h1>
             <p class="text-2xl mb-6">الصفحة التي تبحث عنها غير موجودة</p>
-            <a href="/oraganization-mvc/public/programs"
+            <a href="/oraganization-mvc/public/users"
             class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-            العودة إلى البرامج
+            العودة 
             </a>
         </div>
     </body>
