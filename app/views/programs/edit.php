@@ -8,7 +8,8 @@
   </head>
   <body class="bg-gray-100">
       <div class="max-w-xl mx-auto p-6">
-        <form method="POST" action="/oraganization-mvc/public/programs/<?= $prog['program_id'] ?>/update" class="space-y-4 bg-white p-6 rounded-lg shadow">
+        <form method="POST" action="/oraganization-mvc/public/programs/<?= $prog['program_id'] ?>" class="space-y-4 bg-white p-6 rounded-lg shadow">
+        <input type="hidden" name="_method" value="PUT">
           <h1 class="text-2xl font-bold mb-6">تعديل البرنامج</h1>
           <input type="text" name="title" value="<?= htmlspecialchars($prog['title']) ?>" class="w-full border rounded px-3 py-2" placeholder="العنوان">
           <textarea name="desc" class="w-full border rounded px-3 py-2" placeholder="الوصف"><?= htmlspecialchars($prog['descrip']) ?></textarea>
