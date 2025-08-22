@@ -1,12 +1,10 @@
 <?php
-
 namespace App\Controllers;
 
 use App\Models\Organization;
 
 class OrganizationController 
 {
-
     function index() 
     {
         $org = new Organization();
@@ -29,12 +27,11 @@ class OrganizationController
         $mission = trim($_POST['mission'] ?? '');
         $goals = $_POST['goals'] ?? [];
 
-        if ($name === '') 
-            {
-                $error = 'الرجاء تعبئة اسم المنظمة.';
-                require __DIR__ . '/../views/organization/create.php';
-                return;
-            }
+        if ($name === '') {
+            $error = 'الرجاء تعبئة اسم المنظمة.';
+            require __DIR__ . '/../views/organization/create.php';
+            return;
+        }
 
         $org->create($name, $logo, $vision, $mission, $goals);
 
@@ -46,14 +43,11 @@ class OrganizationController
     {
         $org = new Organization();
         $organization = $org->find($id);
-
-        if (!$organization) 
-            {
-                http_response_code(404);
-                echo "Organization not found";
-                return;
-            }
-
+        if (!$organization) {
+            http_response_code(404);
+            echo "Organization not found";
+            return;
+        }
         require __DIR__ . '/../views/organization/edit.php';
     }
 
@@ -80,5 +74,36 @@ class OrganizationController
 
         header("Location: /oraganization-mvc/public/organization");
         exit;
+    }
+
+    // REST API JSON
+    function apiIndex()
+    {
+        header('Content-Type: application/json');
+        $org = new Organization();
+        echo json_encode($org->all());
+    }
+
+    function apiStore()
+    {
+        header('Content-Type: application/json');
+        $data = json_decode(file_get_contents("php://input"), true);
+        $org = new Organization();
+        $org->create(
+            $data['name'] ?? '',
+            $data['logo'] ?? '',
+            $data['vision'] ?? '',
+            $data['mission'] ?? '',
+            $data['goals'] ?? []
+        );
+        echo json_encode(['success' => true]);
+    }
+
+    function apiDelete($id)
+    {
+        header('Content-Type: application/json');
+        $org = new Organization();
+        $org->delete($id);
+        echo json_encode(['success' => true]);
     }
 }
