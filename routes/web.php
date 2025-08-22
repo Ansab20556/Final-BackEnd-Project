@@ -4,6 +4,7 @@ use App\Controllers\ProgramController;
 use App\Controllers\AuthController;
 use App\Controllers\UserController;
 use App\Controllers\OrganizationController;
+use App\Controllers\DonationController;
 use App\Core\Router;
 
 $router = new Router();
@@ -38,3 +39,11 @@ $router->post('/oraganization-mvc/public/organization', [OrganizationController:
 $router->get('/oraganization-mvc/public/organization/{id}/edit', [OrganizationController::class, 'edit']);
 $router->post('/oraganization-mvc/public/organization/{id}/update', [OrganizationController::class, 'update']);
 $router->post('/oraganization-mvc/public/organization/{id}/delete', [OrganizationController::class, 'delete']);
+
+
+$router->get('/oraganization-mvc/public/donations', [DonationController::class, 'index']);
+$router->get('/oraganization-mvc/public/donations/create', [DonationController::class, 'create']);
+$router->post('/oraganization-mvc/public/donations', [DonationController::class, 'store']);
+$router->get('/oraganization-mvc/public/donations/{id}/edit', [DonationController::class, 'edit']);
+$router->post('/oraganization-mvc/public/donations/{id}/update', [DonationController::class, 'update']);
+$router->post('/oraganization-mvc/public/donations/{id}/delete', [DonationController::class, 'delete']);
