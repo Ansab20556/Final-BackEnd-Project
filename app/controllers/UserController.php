@@ -3,48 +3,56 @@ namespace App\Controllers;
 
 use App\Models\User;
 
-class UserController {
+class UserController 
+{
 
-    function index() {
+    function index() 
+    {
         $user = new User();
         $users = $user->all();
         require __DIR__ . '/../views/users/index.php';
     }
 
-    function create() {
+    function create() 
+    {
         require __DIR__ . '/../views/users/create.php';
     }
 
-    function store() {
+    function store() 
+    {
         $user = new User();
         $username = $_POST['username'] ?? '';
         $email = $_POST['email'] ?? '';
         $password = $_POST['password'] ?? '';
         $role = $_POST['role'] ?? 'user';
 
-        if ($username === '' || $email === '' || $password === '') {
-            $error = 'الرجاء تعبئة كل الحقول';
-            require __DIR__ . '/../views/users/create.php';
-            return;
-        }
+        if ($username === '' || $email === '' || $password === '') 
+            {
+                $error = 'الرجاء تعبئة كل الحقول';
+                require __DIR__ . '/../views/users/create.php';
+                return;
+            }
 
         $user->create($username, $email, $password, $role);
         header("Location: /oraganization-mvc/public/users");
         exit;
     }
 
-    function edit($id) {
+    function edit($id) 
+    {
         $user = new User();
         $u = $user->find($id);
-        if (!$u) {
-            http_response_code(404);
-            echo "User not found";
-            return;
-        }
+        if (!$u) 
+            {
+                http_response_code(404);
+                echo "User not found";
+                return;
+            }
         require __DIR__ . '/../views/users/edit.php';
     }
 
-    function update($id) {
+    function update($id) 
+    {
         $user = new User();
         $username = $_POST['username'] ?? '';
         $email = $_POST['email'] ?? '';
@@ -56,7 +64,8 @@ class UserController {
         exit;
     }
 
-    function delete($id) {
+    function delete($id) 
+    {
         $user = new User();
         $user->delete($id);
         header("Location: /oraganization-mvc/public/users");
