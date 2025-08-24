@@ -71,4 +71,11 @@ class User
         $stm = App::db()->prepare("DELETE FROM users WHERE id = :id");
         $stm->execute(['id' => $id]);
     }
+    
+    function deleteAll()
+    {
+        $stm = App::db()->prepare("DELETE FROM users");
+        $stm->execute();
+    }
+
 }
