@@ -63,6 +63,7 @@ class UserController
         $user = new User();
         $user->create($username, $email, $password, $role);
 
+        // نسجل العملية
         $logger->log("تم إنشاء مستخدم جديد: " . $username);
 
         // -------------------------------------------------------
@@ -147,6 +148,30 @@ class UserController
         $user->delete($id);
         echo json_encode(['success' => true]);
     }
+    function apiUpdate($id)
+    {
+        header('Content-Type: application/json');
+        $data = $this->getRequestData();
+
+        $username = $data['username'] ?? '';
+        $email    = $data['email'] ?? '';
+        $password = $data['password'] ?? null;
+        $role     = $data['role'] ?? 'user';
+
+        $user = new User();
+        $user->update($id, $username, $email, $password, $role);
+
+        echo json_encode(['success' => true]);
+    }
+
+    function apiDeleteAll()
+    {
+        header('Content-Type: application/json');
+        $user = new User();
+        $user->deleteAll();
+        echo json_encode(['success' => true]);
+    }
+
 
     function apiStore() 
     {
