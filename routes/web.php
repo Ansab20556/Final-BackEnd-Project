@@ -77,8 +77,22 @@ $router->get('/oraganization-mvc/public/api/v1/users', [UserController::class, '
 $router->get('/oraganization-mvc/public/api/v1/users/{id}', [UserController::class, 'apiShow']);
 $router->post('/oraganization-mvc/public/api/v1/users', [UserController::class, 'apiStore']);
 $router->delete('/oraganization-mvc/public/api/v1/users/{id}', [UserController::class, 'apiDelete']);
+$router->put('/oraganization-mvc/public/api/v1/users/{id}', [UserController::class, 'apiUpdate']);
+$router->delete('/oraganization-mvc/public/api/v1/users', [UserController::class, 'apiDeleteAll']);
+
+// Programs API
+// API routes
+$router->get('/oraganization-mvc/public/api/v1/programs', [ProgramController::class, 'apiIndex']);
+$router->get('/oraganization-mvc/public/api/v1/programs/{id}', [ProgramController::class, 'apiShow']); // جديد
+$router->post('/oraganization-mvc/public/api/v1/programs', [ProgramController::class, 'apiStore']);
+$router->put('/oraganization-mvc/public/api/v1/programs/{id}', [ProgramController::class, 'apiUpdate']);
+$router->delete('/oraganization-mvc/public/api/v1/programs/{id}', [ProgramController::class, 'apiDelete']);
+$router->delete('/oraganization-mvc/public/api/v1/programs', [ProgramController::class, 'apiDeleteAll']); // حذف كل البرامج
 
 // Donations API
-$router->get('/api/v1/donations', [DonationController::class, 'apiIndex']);
-$router->post('/api/v1/donations', [DonationController::class, 'apiStore']);
-$router->delete('/api/v1/donations/{id}', [DonationController::class, 'apiDelete']);
+$router->get('/oraganization-mvc/public/api/v1/donations', [DonationController::class, 'apiIndex']);
+$router->get('/oraganization-mvc/public/api/v1/donations/{id}', [DonationController::class, 'find']); // لو تريد عرض واحد
+$router->post('/oraganization-mvc/public/api/v1/donations', [DonationController::class, 'apiStore']);
+$router->put('/oraganization-mvc/public/api/v1/donations/{id}', [DonationController::class, 'apiUpdate']); 
+$router->delete('/oraganization-mvc/public/api/v1/donations/{id}', [DonationController::class, 'apiDelete']);
+$router->delete('/oraganization-mvc/public/api/v1/donations', [DonationController::class, 'apideleteAll']);
