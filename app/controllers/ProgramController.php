@@ -82,11 +82,70 @@ class ProgramController
     }
 
     // REST API
+
     function apiIndex() 
     {
-        header('Content-Type: application/json');
+        header("Content-Type: application/json; charset=UTF-8");
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+        header("Access-Control-Allow-Headers: Content-Type, Authorization");
+
         $program = new Program();
-        echo json_encode($program->all());
+        echo json_encode([
+            "status" => "success",
+            "data" => $program->all()
+        ]);
+    }
+
+    function apiShow($id) 
+    {
+        header("Content-Type: application/json; charset=UTF-8");
+        $program = new Program();
+        $prog = $program->find($id);
+        if ($prog) 
+            {
+                echo json_encode(["status" => "success", "data" => $prog]);
+            } 
+            else 
+            {
+                http_response_code(404);
+                echo json_encode(["status" => "error", "message" => "Program not found"]);
+            }
+    }
+
+    function apiStore() 
+    {
+        header("Content-Type: application/json; charset=UTF-8");
+        $program = new Program();
+        $data = json_decode(file_get_contents("php://input"), true);
+
+        $program->create(
+            $data['title'] ?? '',
+            $data['descrip'] ?? '',
+            $data['startt_date'] ?? '',
+            $data['end_date'] ?? '',
+            $data['typ'] ?? '',
+            $data['region'] ?? ''
+        );
+        echo json_encode(["status" => "success"]);
+    }
+
+    function apiUpdate($id) 
+    {
+        header("Content-Type: application/json; charset=UTF-8");
+        $program = new Program();
+        $data = json_decode(file_get_contents("php://input"), true);
+
+        $program->update(
+            $id,
+            $data['title'] ?? '',
+            $data['descrip'] ?? '',
+            $data['startt_date'] ?? '',
+            $data['end_date'] ?? '',
+            $data['typ'] ?? '',
+            $data['region'] ?? ''
+        );
+        echo json_encode(["status" => "success"]);
     }
 
     function apiDelete($id) 
@@ -96,4 +155,15 @@ class ProgramController
         $program->delete($id);
         echo json_encode(['success' => true]);
     }
-}
+
+    function apiDeleteAll() 
+    {
+        header("Content-Type: application/json; charset=UTF-8");
+        $program = new Program();
+        $all = $program->all();
+        foreach($all as $p) {
+            $program->delete($p['program_id']);
+        }
+        echo json_encode(["status" => "success"]);
+    }
+    }
