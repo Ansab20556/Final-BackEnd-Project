@@ -108,6 +108,31 @@ class DonationController
 
         echo json_encode(['success' => true]);
     }
+    function apiUpdate($id)
+    {
+        header('Content-Type: application/json');
+        $data = json_decode(file_get_contents("php://input"), true);
+        if (!$data) 
+            {
+                http_response_code(400);
+                echo json_encode(['error' => 'Invalid JSON']);
+                return;
+            }
+
+        $donation = new Donation();
+        $donation->update(
+            $id,
+            $data['donor_name'] ?? '',
+            $data['donation_type'] ?? '',
+            $data['amount'] ?? 0,
+            $data['item_description'] ?? '',
+            $data['donation_date'] ?? '',
+            $data['confirmed'] ?? 0
+        );
+
+        echo json_encode(['success' => true]);
+    }
+
 
     function apiDelete($id)
     {
@@ -116,4 +141,17 @@ class DonationController
         $donation->delete($id);
         echo json_encode(['success' => true]);
     }
+
+    function apideleteAll()
+    {
+        header("Content-Type: application/json; charset=UTF-8");
+        $donation = new Donation();
+        $all = $donation->all();
+        foreach($all as $d) 
+            {
+                $donation->delete($d['donation_id']);
+            }
+        echo json_encode(["status" => "success"]);
+    }
+
 }
