@@ -1,64 +1,88 @@
 <?php
+
 namespace App\Controllers;
 
 use App\Models\Program;
 
-class ProgramController 
+class ProgramController
 {
-    function index() 
+    // ---------------- صفحات HTML عادية ----------------
+
+    /**
+     * عرض صفحة البرامج
+     */
+    public function index(): void
     {
-        $program = new Program();
-        $programs = $program->all();
+        $programObj = new Program();
+        $programs   = $programObj->all();
+
         require __DIR__ . '/../views/programs/index.php';
     }
 
-    function create() 
+    /**
+     * عرض صفحة إنشاء برنامج جديد
+     */
+    public function create(): void
     {
         require __DIR__ . '/../views/programs/create.php';
     }
 
-    function store() 
+    /**
+     * حفظ برنامج جديد
+     */
+    public function store(): void
     {
-        $program = new Program();
-        $title = trim($_POST['title'] ?? '');
-        $descrip = trim($_POST['desc'] ?? '');
-        $start_date = trim($_POST['start_date'] ?? '');
-        $end_date = trim($_POST['end_date'] ?? '');
-        $type = trim($_POST['type'] ?? '');
-        $region = trim($_POST['region'] ?? '');
+        $programObj = new Program();
 
-        if ($title === '' || $descrip === '' || $start_date === '' || $end_date === '' || $type === '' || $region === '') {
+        $title     = trim($_POST['title'] ?? '');
+        $description = trim($_POST['desc'] ?? '');
+        $startDate = trim($_POST['start_date'] ?? '');
+        $endDate   = trim($_POST['end_date'] ?? '');
+        $type      = trim($_POST['type'] ?? '');
+        $region    = trim($_POST['region'] ?? '');
+
+        if ($title === '' || $description === '' || $startDate === '' || $endDate === '' || $type === '' || $region === '') {
             $error = 'الرجاء تعبئة كل الحقول.';
             require __DIR__ . '/../views/programs/create.php';
             return;
         }
 
-        $program->create($title, $descrip, $start_date, $end_date, $type, $region);
+        $programObj->create($title, $description, $startDate, $endDate, $type, $region);
 
         header("Location: /oraganization-mvc/public/programs");
         exit;
     }
 
-    function edit($id) 
+    /**
+     * عرض صفحة تعديل برنامج محدد
+     */
+    public function edit(int $id): void
     {
-        $program = new Program();
-        $prog = $program->find($id);
-        if (!$prog) {
+        $programObj = new Program();
+        $program    = $programObj->find($id);
+
+        if (!$program) {
             http_response_code(404);
             echo "Program not found";
             return;
         }
+
         require __DIR__ . '/../views/programs/edit.php';
     }
 
-    function update($id) 
+    /**
+     * تحديث برنامج محدد
+     */
+    public function update(int $id): void
     {
-        $program = new Program();
-        $data = $_POST;
+        $programObj = new Program();
+        $data       = $_POST;
+
         if (empty($data) && $_SERVER['CONTENT_TYPE'] === 'application/json') {
             $data = json_decode(file_get_contents("php://input"), true);
         }
-        $program->update(
+
+        $programObj->update(
             $id,
             $data['title'] ?? '',
             $data['desc'] ?? '',
@@ -72,102 +96,133 @@ class ProgramController
         exit;
     }
 
-    function delete($id) 
+    /**
+     * حذف برنامج محدد
+     */
+    public function delete(int $id): void
     {
-        $program = new Program();
-        $program->delete($id);
+        $programObj = new Program();
+        $programObj->delete($id);
 
         header("Location: /oraganization-mvc/public/programs");
         exit;
     }
 
-    // REST API
+    // ---------------- REST API JSON ----------------
 
-    function apiIndex() 
+    /**
+     * إرجاع جميع البرامج بصيغة JSON
+     */
+    public function apiIndex(): void
     {
         header("Content-Type: application/json; charset=UTF-8");
         header("Access-Control-Allow-Origin: *");
         header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
         header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
-        $program = new Program();
+        $programObj = new Program();
         echo json_encode([
             "status" => "success",
-            "data" => $program->all()
+            "data"   => $programObj->all()
         ]);
     }
 
-    function apiShow($id) 
+    /**
+     * عرض برنامج محدد بصيغة JSON
+     */
+    public function apiShow(int $id): void
     {
         header("Content-Type: application/json; charset=UTF-8");
-        $program = new Program();
-        $prog = $program->find($id);
-        if ($prog) 
-            {
-                echo json_encode(["status" => "success", "data" => $prog]);
-            } 
-            else 
-            {
-                http_response_code(404);
-                echo json_encode(["status" => "error", "message" => "Program not found"]);
-            }
+
+        $programObj = new Program();
+        $program    = $programObj->find($id);
+
+        if ($program) {
+            echo json_encode([
+                "status" => "success",
+                "data"   => $program
+            ]);
+        } else {
+            http_response_code(404);
+            echo json_encode([
+                "status"  => "error",
+                "message" => "Program not found"
+            ]);
+        }
     }
 
-    function apiStore() 
+    /**
+     * حفظ برنامج جديد عبر API
+     */
+    public function apiStore(): void
     {
         header("Content-Type: application/json; charset=UTF-8");
-        $program = new Program();
-        $data = json_decode(file_get_contents("php://input"), true);
 
-        $program->create(
+        $programObj = new Program();
+        $data       = json_decode(file_get_contents("php://input"), true);
+
+        $programObj->create(
             $data['title'] ?? '',
-            $data['descrip'] ?? '',
-            $data['startt_date'] ?? '',
+            $data['desc'] ?? '',
+            $data['start_date'] ?? '',
             $data['end_date'] ?? '',
-            $data['typ'] ?? '',
+            $data['type'] ?? '',
             $data['region'] ?? ''
         );
+
         echo json_encode(["status" => "success"]);
     }
 
-    function apiUpdate($id) 
+    /**
+     * تحديث برنامج محدد عبر API
+     */
+    public function apiUpdate(int $id): void
     {
         header("Content-Type: application/json; charset=UTF-8");
-        $program = new Program();
-        $data = json_decode(file_get_contents("php://input"), true);
 
-        $program->update(
+        $programObj = new Program();
+        $data       = json_decode(file_get_contents("php://input"), true);
+
+        $programObj->update(
             $id,
             $data['title'] ?? '',
-            $data['descrip'] ?? '',
-            $data['startt_date'] ?? '',
+            $data['desc'] ?? '',
+            $data['start_date'] ?? '',
             $data['end_date'] ?? '',
-            $data['typ'] ?? '',
+            $data['type'] ?? '',
             $data['region'] ?? ''
         );
+
         echo json_encode(["status" => "success"]);
     }
 
-    function apiDelete($id) 
+    /**
+     * حذف برنامج محدد عبر API
+     */
+    public function apiDelete(int $id): void
     {
         header('Content-Type: application/json');
-        $program = new Program();
-        $program->delete($id);
+
+        $programObj = new Program();
+        $programObj->delete($id);
+
         echo json_encode(['success' => true]);
     }
 
-    function apiDeleteAll() 
+    /**
+     * حذف جميع البرامج عبر API
+     */
+    public function apiDeleteAll(): void
     {
         header("Content-Type: application/json; charset=UTF-8");
-        $program = new Program();
-        $all = $program->all();
-        foreach($all as $p) {
-            $program->delete($p['program_id']);
+
+        $programObj = new Program();
+        $all        = $programObj->all();
+
+        foreach ($all as $p) {
+            $programObj->delete((int) $p['program_id']);
         }
+
         echo json_encode(["status" => "success"]);
     }
-
-
-    
-
 }
