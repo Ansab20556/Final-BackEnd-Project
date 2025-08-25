@@ -1,46 +1,61 @@
 <?php
+
 namespace App\Controllers;
 
 use App\Core\Response;
 use App\Models\User;
 use App\Core\LoggerFactory;
 
-class UserController 
+class UserController
 {
     private $logger;
-    public function __construct() 
+
+    /**
+     * إنشاء الكائن Logger عبر Factory
+     */
+    public function __construct()
     {
-        $this->logger = LoggerFactory::create('file'); // Factory يحدد النوع
+        $this->logger = LoggerFactory::create('file');
     }
-    private function getRequestData()
+
+    /**
+     * جلب بيانات الطلب سواء POST أو JSON
+     */
+    private function getRequestData(): array
     {
-        // جلب بيانات JSON إذا موجودة
         $json = file_get_contents("php://input");
         $data = json_decode($json, true);
 
-        // إذا مافي JSON، نرجع $_POST
-        if (is_array($data)) {
-            return $data;
-        }
-        return $_POST;
+        return is_array($data) ? $data : $_POST;
     }
 
-    function index() 
+    // ---------------- صفحات HTML عادية ----------------
+
+    /**
+     * عرض صفحة المستخدمين
+     */
+    public function index(): void
     {
-        $user = new User();
+        $user  = new User();
         $users = $user->all();
+
         require __DIR__ . '/../views/users/index.php';
     }
 
-    function create() 
+    /**
+     * عرض صفحة إنشاء مستخدم جديد
+     */
+    public function create(): void
     {
         require __DIR__ . '/../views/users/create.php';
     }
 
-    function store() 
+    /**
+     * حفظ مستخدم جديد
+     */
+    public function store(): void
     {
-        $data = $this->getRequestData();
-
+        $data     = $this->getRequestData();
         $username = $data['username'] ?? '';
         $email    = $data['email'] ?? '';
         $password = $data['password'] ?? '';
@@ -52,21 +67,16 @@ class UserController
                 echo json_encode(['error' => 'الرجاء تعبئة كل الحقول']);
                 return;
             }
+
             $error = 'الرجاء تعبئة كل الحقول';
             require __DIR__ . '/../views/users/create.php';
             return;
         }
 
-        // ------------------ Factory Logger ------------------
-        $logger = \App\Core\LoggerFactory::create('file');
-
         $user = new User();
         $user->create($username, $email, $password, $role);
 
-        // نسجل العملية
-        $logger->log("تم إنشاء مستخدم جديد: " . $username);
-
-        // -------------------------------------------------------
+        $this->logger->log("تم إنشاء مستخدم جديد: " . $username);
 
         if ($_SERVER['CONTENT_TYPE'] === 'application/json') {
             echo json_encode(['success' => true]);
@@ -77,20 +87,27 @@ class UserController
         exit;
     }
 
-    function edit($id) 
+    /**
+     * عرض صفحة تعديل مستخدم محدد
+     */
+    public function edit(int $id): void
     {
-        $user = new User();
-        $u = $user->find($id);
-        if (!$u) {
+        $userObj = new User();
+        $user    = $userObj->find($id);
+
+        if (!$user) {
             Response::json(['error' => 'User not found'], 404);
         }
+
         require __DIR__ . '/../views/users/edit.php';
     }
 
-    function update($id) 
+    /**
+     * تحديث مستخدم محدد
+     */
+    public function update(int $id): void
     {
-        $data = $this->getRequestData();
-
+        $data     = $this->getRequestData();
         $username = $data['username'] ?? '';
         $email    = $data['email'] ?? '';
         $password = $data['password'] ?? null;
@@ -108,7 +125,10 @@ class UserController
         exit;
     }
 
-    function delete($id) 
+    /**
+     * حذف مستخدم محدد
+     */
+    public function delete(int $id): void
     {
         $user = new User();
         $user->delete($id);
@@ -123,36 +143,57 @@ class UserController
     }
 
     // ---------------- REST API ----------------
-    function apiIndex() 
+
+    /**
+     * إرجاع جميع المستخدمين بصيغة JSON
+     */
+    public function apiIndex(): void
     {
         header('Content-Type: application/json');
+
         $user = new User();
         echo json_encode($user->all());
     }
 
-    function apiShow($id) {
-        header('Content-Type: application/json');
-        $user = new User();
-        $u = $user->find($id);
-        if(!$u) 
-            {
-                Response::json(['error' => 'User not found'], 404);
-            }
-            Response::json($u);
-    }
-
-    function apiDelete($id) 
+    /**
+     * عرض مستخدم محدد بصيغة JSON
+     */
+    public function apiShow(int $id): void
     {
         header('Content-Type: application/json');
+
+        $userObj = new User();
+        $user    = $userObj->find($id);
+
+        if (!$user) {
+            Response::json(['error' => 'User not found'], 404);
+            return;
+        }
+
+        Response::json($user);
+    }
+
+    /**
+     * حذف مستخدم محدد عبر API
+     */
+    public function apiDelete(int $id): void
+    {
+        header('Content-Type: application/json');
+
         $user = new User();
         $user->delete($id);
+
         echo json_encode(['success' => true]);
     }
-    function apiUpdate($id)
+
+    /**
+     * تحديث مستخدم محدد عبر API
+     */
+    public function apiUpdate(int $id): void
     {
         header('Content-Type: application/json');
-        $data = $this->getRequestData();
 
+        $data     = $this->getRequestData();
         $username = $data['username'] ?? '';
         $email    = $data['email'] ?? '';
         $password = $data['password'] ?? null;
@@ -164,62 +205,75 @@ class UserController
         echo json_encode(['success' => true]);
     }
 
-    function apiDeleteAll()
+    /**
+     * حذف جميع المستخدمين عبر API
+     */
+    public function apiDeleteAll(): void
     {
         header('Content-Type: application/json');
+
         $user = new User();
         $user->deleteAll();
+
         echo json_encode(['success' => true]);
     }
 
-
-    function apiStore() 
+    /**
+     * حفظ مستخدم جديد عبر API
+     */
+    public function apiStore(): void
     {
         header('Content-Type: application/json');
+
         $data = $this->getRequestData();
 
-        if(empty($data['username']) || empty($data['email']) || empty($data['password'])) {
+        if (empty($data['username']) || empty($data['email']) || empty($data['password'])) {
             http_response_code(400);
             echo json_encode(['error' => 'Missing fields']);
             return;
         }
 
         $user = new User();
-        $user->create($data['username'], $data['email'], $data['password'], $data['role'] ?? 'user');
+        $user->create(
+            $data['username'],
+            $data['email'],
+            $data['password'],
+            $data['role'] ?? 'user'
+        );
+
         echo json_encode(['success' => true]);
     }
-    
-    function apiLogin() 
+
+    /**
+     * تسجيل دخول المستخدم عبر API
+     */
+    public function apiLogin(): void
     {
         header('Content-Type: application/json');
-        $json = file_get_contents("php://input");
-        $data = json_decode($json, true);
 
+        $data  = json_decode(file_get_contents("php://input"), true);
         $email = $data['email'] ?? '';
         $password = $data['password'] ?? '';
 
-        if (empty($email) || empty($password)) 
-            {
-                http_response_code(400);
-                echo json_encode(['error' => 'الرجاء إدخال البريد وكلمة المرور']);
-                return;
-            }
+        if (empty($email) || empty($password)) {
+            http_response_code(400);
+            echo json_encode(['error' => 'الرجاء إدخال البريد وكلمة المرور']);
+            return;
+        }
 
-        $user = new \App\Models\User();
-        $u = $user->findByEmail($email);
+        $userObj = new User();
+        $user    = $userObj->findByEmail($email);
 
-        if (!$u || !password_verify($password, $u['password'])) 
-            {
-                http_response_code(401);
-                echo json_encode(['error' => 'البريد أو كلمة المرور غير صحيحة']);
-                return;
-            }
+        if (!$user || !password_verify($password, $user['password'])) {
+            http_response_code(401);
+            echo json_encode(['error' => 'البريد أو كلمة المرور غير صحيحة']);
+            return;
+        }
 
-        // ترجع فقط بيانات المستخدم مع الدور
         echo json_encode([
-            'id' => $u['id'],
-            'username' => $u['username'],
-            'role' => $u['role']
+            'id'       => $user['id'],
+            'username' => $user['username'],
+            'role'     => $user['role']
         ]);
     }
 }
