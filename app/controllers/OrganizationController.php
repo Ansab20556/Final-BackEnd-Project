@@ -1,31 +1,44 @@
 <?php
+
 namespace App\Controllers;
 
 use App\Models\Organization;
 
-class OrganizationController 
+class OrganizationController
 {
-    function index() 
+    // ---------------- صفحات HTML عادية ----------------
+
+    /**
+     * عرض صفحة المنظمات
+     */
+    public function index(): void
     {
-        $org = new Organization();
-        $organizations = $org->all();
+        $organizationObj = new Organization();
+        $organizations   = $organizationObj->all();
+
         require __DIR__ . '/../views/organization/index.php';
     }
 
-    function create() 
+    /**
+     * عرض صفحة إنشاء منظمة جديدة
+     */
+    public function create(): void
     {
         require __DIR__ . '/../views/organization/create.php';
     }
 
-    function store() 
+    /**
+     * حفظ منظمة جديدة
+     */
+    public function store(): void
     {
-        $org = new Organization();
+        $organizationObj = new Organization();
 
-        $name = trim($_POST['name'] ?? '');
-        $logo = trim($_POST['logo'] ?? '');
-        $vision = trim($_POST['vision'] ?? '');
+        $name    = trim($_POST['name'] ?? '');
+        $logo    = trim($_POST['logo'] ?? '');
+        $vision  = trim($_POST['vision'] ?? '');
         $mission = trim($_POST['mission'] ?? '');
-        $goals = $_POST['goals'] ?? [];
+        $goals   = $_POST['goals'] ?? [];
 
         if ($name === '') {
             $error = 'الرجاء تعبئة اسم المنظمة.';
@@ -33,77 +46,104 @@ class OrganizationController
             return;
         }
 
-        $org->create($name, $logo, $vision, $mission, $goals);
+        $organizationObj->create($name, $logo, $vision, $mission, $goals);
 
         header("Location: /oraganization-mvc/public/organization");
         exit;
     }
 
-    function edit($id) 
+    /**
+     * عرض صفحة تعديل منظمة محددة
+     */
+    public function edit(int $id): void
     {
-        $org = new Organization();
-        $organization = $org->find($id);
+        $organizationObj = new Organization();
+        $organization    = $organizationObj->find($id);
+
         if (!$organization) {
             http_response_code(404);
             echo "Organization not found";
             return;
         }
+
         require __DIR__ . '/../views/organization/edit.php';
     }
 
-    function update($id) 
+    /**
+     * تحديث منظمة محددة
+     */
+    public function update(int $id): void
     {
-        $org = new Organization();
+        $organizationObj = new Organization();
 
-        $name = trim($_POST['name'] ?? '');
-        $logo = trim($_POST['logo'] ?? '');
-        $vision = trim($_POST['vision'] ?? '');
+        $name    = trim($_POST['name'] ?? '');
+        $logo    = trim($_POST['logo'] ?? '');
+        $vision  = trim($_POST['vision'] ?? '');
         $mission = trim($_POST['mission'] ?? '');
-        $goals = $_POST['goals'] ?? [];
+        $goals   = $_POST['goals'] ?? [];
 
-        $org->update($id, $name, $logo, $vision, $mission, $goals);
-
-        header("Location: /oraganization-mvc/public/organization");
-        exit;
-    }
-
-    function delete($id) 
-    {
-        $org = new Organization();
-        $org->delete($id);
+        $organizationObj->update($id, $name, $logo, $vision, $mission, $goals);
 
         header("Location: /oraganization-mvc/public/organization");
         exit;
     }
 
-    // REST API JSON
-    function apiIndex()
+    /**
+     * حذف منظمة محددة
+     */
+    public function delete(int $id): void
     {
-        header('Content-Type: application/json');
-        $org = new Organization();
-        echo json_encode($org->all());
+        $organizationObj = new Organization();
+        $organizationObj->delete($id);
+
+        header("Location: /oraganization-mvc/public/organization");
+        exit;
     }
 
-    function apiStore()
+    // ---------------- REST API JSON ----------------
+
+    /**
+     * إرجاع جميع المنظمات بصيغة JSON
+     */
+    public function apiIndex(): void
     {
         header('Content-Type: application/json');
+
+        $organizationObj = new Organization();
+        echo json_encode($organizationObj->all());
+    }
+
+    /**
+     * حفظ منظمة جديدة عبر API
+     */
+    public function apiStore(): void
+    {
+        header('Content-Type: application/json');
+
         $data = json_decode(file_get_contents("php://input"), true);
-        $org = new Organization();
-        $org->create(
+
+        $organizationObj = new Organization();
+        $organizationObj->create(
             $data['name'] ?? '',
             $data['logo'] ?? '',
             $data['vision'] ?? '',
             $data['mission'] ?? '',
             $data['goals'] ?? []
         );
+
         echo json_encode(['success' => true]);
     }
 
-    function apiDelete($id)
+    /**
+     * حذف منظمة محددة عبر API
+     */
+    public function apiDelete(int $id): void
     {
         header('Content-Type: application/json');
-        $org = new Organization();
-        $org->delete($id);
+
+        $organizationObj = new Organization();
+        $organizationObj->delete($id);
+
         echo json_encode(['success' => true]);
     }
 }
