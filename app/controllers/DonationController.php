@@ -1,95 +1,140 @@
 <?php
+
 namespace App\Controllers;
 
 use App\Models\Donation;
 
 class DonationController
 {
-    // صفحة HTML العادية
-    function index()
+    /**
+     * عرض صفحة التبرعات (HTML)
+     */
+    public function index(): void
     {
-        $donation = new Donation();
+        $donation  = new Donation();
         $donations = $donation->all();
+
         require __DIR__ . '/../views/donations/index.php';
     }
 
-    function create()
+    /**
+     * عرض صفحة إنشاء تبرع جديد
+     */
+    public function create(): void
     {
         require __DIR__ . '/../views/donations/create.php';
     }
 
-    function store()
+    /**
+     * حفظ تبرع جديد
+     */
+    public function store(): void
     {
-        $donation = new Donation();
-
-        $donor_name      = trim($_POST['donor_name'] ?? '');
-        $donation_type   = trim($_POST['donation_type'] ?? '');
+        $donation        = new Donation();
+        $donorName       = trim($_POST['donor_name'] ?? '');
+        $donationType    = trim($_POST['donation_type'] ?? '');
         $amount          = $_POST['amount'] ?? 0;
-        $item_description = trim($_POST['item_description'] ?? '');
-        $donation_date   = $_POST['donation_date'] ?? '';
+        $itemDescription = trim($_POST['item_description'] ?? '');
+        $donationDate    = $_POST['donation_date'] ?? '';
         $confirmed       = isset($_POST['confirmed']) ? 1 : 0;
 
-        if ($donor_name === '' || $donation_type === '' || $donation_date === '') {
+        if ($donorName === '' || $donationType === '' || $donationDate === '') {
             $error = "الرجاء تعبئة الحقول المطلوبة";
             require __DIR__ . '/../views/donations/create.php';
             return;
         }
 
-        $donation->create($donor_name, $donation_type, $amount, $item_description, $donation_date, $confirmed);
+        $donation->create(
+            $donorName,
+            $donationType,
+            $amount,
+            $itemDescription,
+            $donationDate,
+            $confirmed
+        );
 
         header("Location: /oraganization-mvc/public/donations");
         exit;
     }
 
-    function edit($id)
+    /**
+     * عرض صفحة تعديل تبرع
+     */
+    public function edit(int $id): void
     {
         $donation = new Donation();
-        $don = $donation->find($id);
+        $don      = $donation->find($id);
+
         if (!$don) {
             http_response_code(404);
             echo "Donation not found";
             return;
         }
+
         require __DIR__ . '/../views/donations/edit.php';
     }
 
-    function update($id)
+    /**
+     * تحديث بيانات التبرع
+     */
+    public function update(int $id): void
     {
-        $donation = new Donation();
-
-        $donor_name      = trim($_POST['donor_name'] ?? '');
-        $donation_type   = trim($_POST['donation_type'] ?? '');
+        $donation        = new Donation();
+        $donorName       = trim($_POST['donor_name'] ?? '');
+        $donationType    = trim($_POST['donation_type'] ?? '');
         $amount          = $_POST['amount'] ?? 0;
-        $item_description = trim($_POST['item_description'] ?? '');
-        $donation_date   = $_POST['donation_date'] ?? '';
+        $itemDescription = trim($_POST['item_description'] ?? '');
+        $donationDate    = $_POST['donation_date'] ?? '';
         $confirmed       = isset($_POST['confirmed']) ? 1 : 0;
 
-        $donation->update($id, $donor_name, $donation_type, $amount, $item_description, $donation_date, $confirmed);
+        $donation->update(
+            $id,
+            $donorName,
+            $donationType,
+            $amount,
+            $itemDescription,
+            $donationDate,
+            $confirmed
+        );
 
         header("Location: /oraganization-mvc/public/donations");
         exit;
     }
 
-    function delete($id)
+    /**
+     * حذف تبرع محدد
+     */
+    public function delete(int $id): void
     {
         $donation = new Donation();
         $donation->delete($id);
+
         header("Location: /oraganization-mvc/public/donations");
         exit;
     }
 
     // ---------------- REST API JSON ----------------
-    function apiIndex()
+
+    /**
+     * إرجاع جميع التبرعات بصيغة JSON
+     */
+    public function apiIndex(): void
     {
         header('Content-Type: application/json');
+
         $donation = new Donation();
         echo json_encode($donation->all());
     }
 
-    function apiStore()
+    /**
+     * حفظ تبرع جديد عبر API
+     */
+    public function apiStore(): void
     {
         header('Content-Type: application/json');
+
         $data = json_decode(file_get_contents("php://input"), true);
+
         if (!$data) {
             http_response_code(400);
             echo json_encode(['error' => 'Invalid JSON']);
@@ -108,16 +153,21 @@ class DonationController
 
         echo json_encode(['success' => true]);
     }
-    function apiUpdate($id)
+
+    /**
+     * تحديث تبرع محدد عبر API
+     */
+    public function apiUpdate(int $id): void
     {
         header('Content-Type: application/json');
+
         $data = json_decode(file_get_contents("php://input"), true);
-        if (!$data) 
-            {
-                http_response_code(400);
-                echo json_encode(['error' => 'Invalid JSON']);
-                return;
-            }
+
+        if (!$data) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Invalid JSON']);
+            return;
+        }
 
         $donation = new Donation();
         $donation->update(
@@ -133,25 +183,33 @@ class DonationController
         echo json_encode(['success' => true]);
     }
 
-
-    function apiDelete($id)
+    /**
+     * حذف تبرع محدد عبر API
+     */
+    public function apiDelete(int $id): void
     {
         header('Content-Type: application/json');
+
         $donation = new Donation();
         $donation->delete($id);
+
         echo json_encode(['success' => true]);
     }
 
-    function apideleteAll()
+    /**
+     * حذف جميع التبرعات عبر API
+     */
+    public function apiDeleteAll(): void
     {
         header("Content-Type: application/json; charset=UTF-8");
+
         $donation = new Donation();
-        $all = $donation->all();
-        foreach($all as $d) 
-            {
-                $donation->delete($d['donation_id']);
-            }
+        $all      = $donation->all();
+
+        foreach ($all as $d) {
+            $donation->delete((int) $d['donation_id']);
+        }
+
         echo json_encode(["status" => "success"]);
     }
-
 }
