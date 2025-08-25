@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controllers;
 
 use App\Models\Message;
@@ -6,26 +7,36 @@ use App\Models\Message;
 class MessageController
 {
     // ---------------- صفحات HTML عادية ----------------
-    function index()
+
+    /**
+     * عرض صفحة الرسائل
+     */
+    public function index(): void
     {
-        $message = new Message();
+        $message  = new Message();
         $messages = $message->all();
+
         require __DIR__ . '/../views/messages/index.php';
     }
 
-    function create()
+    /**
+     * عرض صفحة إنشاء رسالة جديدة
+     */
+    public function create(): void
     {
         require __DIR__ . '/../views/messages/create.php';
     }
 
-    function store()
+    /**
+     * حفظ رسالة جديدة
+     */
+    public function store(): void
     {
-        $message = new Message();
-
-        $name    = trim($_POST['name'] ?? '');
-        $email   = trim($_POST['email'] ?? '');
-        $content = trim($_POST['content'] ?? '');
-        $created_at = date('Y-m-d H:i:s');
+        $message   = new Message();
+        $name      = trim($_POST['name'] ?? '');
+        $email     = trim($_POST['email'] ?? '');
+        $content   = trim($_POST['content'] ?? '');
+        $createdAt = date('Y-m-d H:i:s');
 
         if ($name === '' || $email === '' || $content === '') {
             $error = "الرجاء تعبئة جميع الحقول";
@@ -33,31 +44,38 @@ class MessageController
             return;
         }
 
-        $message->create($name, $email, $content, $created_at);
+        $message->create($name, $email, $content, $createdAt);
 
         header("Location: /oraganization-mvc/public/messages");
         exit;
     }
 
-    function edit($id)
+    /**
+     * عرض صفحة تعديل رسالة محددة
+     */
+    public function edit(int $id): void
     {
-        $message = new Message();
-        $msg = $message->find($id);
+        $messageObj = new Message();
+        $msg        = $messageObj->find($id);
+
         if (!$msg) {
             http_response_code(404);
             echo "Message not found";
             return;
         }
+
         require __DIR__ . '/../views/messages/edit.php';
     }
 
-    function update($id)
+    /**
+     * تحديث رسالة محددة
+     */
+    public function update(int $id): void
     {
-        $message = new Message();
-
-        $name    = trim($_POST['name'] ?? '');
-        $email   = trim($_POST['email'] ?? '');
-        $content = trim($_POST['content'] ?? '');
+        $message   = new Message();
+        $name      = trim($_POST['name'] ?? '');
+        $email     = trim($_POST['email'] ?? '');
+        $content   = trim($_POST['content'] ?? '');
 
         $message->update($id, $name, $email, $content);
 
@@ -65,33 +83,51 @@ class MessageController
         exit;
     }
 
-    function delete($id)
+    /**
+     * حذف رسالة محددة
+     */
+    public function delete(int $id): void
     {
         $message = new Message();
         $message->delete($id);
+
         header("Location: /oraganization-mvc/public/messages");
         exit;
     }
 
     // ---------------- REST API JSON ----------------
-    function apiIndex()
+
+    /**
+     * إرجاع جميع الرسائل بصيغة JSON
+     */
+    public function apiIndex(): void
     {
         header('Content-Type: application/json');
+
         $message = new Message();
         echo json_encode($message->all());
     }
 
-    function apiShow($id)
+    /**
+     * عرض رسالة محددة بصيغة JSON
+     */
+    public function apiShow(int $id): void
     {
         header('Content-Type: application/json');
+
         $message = new Message();
         echo json_encode($message->find($id));
     }
 
-    function apiStore()
+    /**
+     * حفظ رسالة جديدة عبر API
+     */
+    public function apiStore(): void
     {
         header('Content-Type: application/json');
+
         $data = json_decode(file_get_contents("php://input"), true);
+
         if (!$data) {
             http_response_code(400);
             echo json_encode(['error' => 'Invalid JSON']);
@@ -109,10 +145,15 @@ class MessageController
         echo json_encode(['success' => true]);
     }
 
-    function apiUpdate($id)
+    /**
+     * تحديث رسالة محددة عبر API
+     */
+    public function apiUpdate(int $id): void
     {
         header('Content-Type: application/json');
+
         $data = json_decode(file_get_contents("php://input"), true);
+
         if (!$data) {
             http_response_code(400);
             echo json_encode(['error' => 'Invalid JSON']);
@@ -130,22 +171,33 @@ class MessageController
         echo json_encode(['success' => true]);
     }
 
-    function apiDelete($id)
+    /**
+     * حذف رسالة محددة عبر API
+     */
+    public function apiDelete(int $id): void
     {
         header('Content-Type: application/json');
+
         $message = new Message();
         $message->delete($id);
+
         echo json_encode(['success' => true]);
     }
 
-    function apiDeleteAll()
+    /**
+     * حذف جميع الرسائل عبر API
+     */
+    public function apiDeleteAll(): void
     {
         header("Content-Type: application/json; charset=UTF-8");
+
         $message = new Message();
-        $all = $message->all();
+        $all     = $message->all();
+
         foreach ($all as $m) {
-            $message->delete($m['message_id']);
+            $message->delete((int) $m['message_id']);
         }
+
         echo json_encode(["status" => "success"]);
     }
 }
