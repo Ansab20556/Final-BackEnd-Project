@@ -5,6 +5,8 @@ use App\Controllers\AuthController;
 use App\Controllers\UserController;
 use App\Controllers\OrganizationController;
 use App\Controllers\DonationController;
+use App\Controllers\MessageController;
+
 use App\Core\Router;
 
 $router = new Router();
@@ -96,3 +98,11 @@ $router->post('/oraganization-mvc/public/api/v1/donations', [DonationController:
 $router->put('/oraganization-mvc/public/api/v1/donations/{id}', [DonationController::class, 'apiUpdate']); 
 $router->delete('/oraganization-mvc/public/api/v1/donations/{id}', [DonationController::class, 'apiDelete']);
 $router->delete('/oraganization-mvc/public/api/v1/donations', [DonationController::class, 'apideleteAll']);
+
+// Message API
+$router->get('/oraganization-mvc/public/api/v1/messages', [MessageController::class, 'apiIndex']);
+$router->get('/oraganization-mvc/public/api/v1/messages/{id}', [MessageController::class, 'apiShow']);
+$router->post('/oraganization-mvc/public/api/v1/messages', [MessageController::class, 'apiStore']);
+$router->put('/oraganization-mvc/public/api/v1/messages/{id}', [MessageController::class, 'apiUpdate']);
+$router->delete('/oraganization-mvc/public/api/v1/messages/{id}', [MessageController::class, 'apiDelete']);
+$router->delete('/oraganization-mvc/public/api/v1/messages', [MessageController::class, 'apiDeleteAll']);
