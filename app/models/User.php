@@ -1,81 +1,122 @@
 <?php
+
 namespace App\Models;
 
 use App\Core\App;
+use PDO;
 
-class User 
+/**
+ * كلاس User لإدارة بيانات المستخدمين
+ */
+class User
 {
-    public function findByEmail($email) 
+    /**
+     * جلب المستخدم بواسطة البريد الإلكتروني
+     *
+     * @param string $email
+     * @return array<string, mixed>|false
+     */
+    public function findByEmail(string $email): array|false
     {
-        $stmt = App::db()->prepare("SELECT * FROM users WHERE email = ?");
-        $stmt->execute([$email]);
-        return $stmt->fetch();
+        $stmt = App::db()->prepare("SELECT * FROM users WHERE email = :email");
+        $stmt->execute(['email' => $email]);
+
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    function all() 
+    /**
+     * جلب كل المستخدمين
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public function all(): array
     {
         $stm = App::db()->prepare("SELECT * FROM users");
         $stm->execute();
-        return $stm->fetchAll();
+
+        return $stm->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    function find($id) 
+    /**
+     * جلب مستخدم بواسطة المعرف
+     *
+     * @param int $id
+     * @return array<string, mixed>|false
+     */
+    public function find(int $id): array|false
     {
         $stm = App::db()->prepare("SELECT * FROM users WHERE id = :id");
         $stm->execute(['id' => $id]);
-        return $stm->fetch();
+
+        return $stm->fetch(PDO::FETCH_ASSOC);
     }
 
-    function create($username, $email, $password, $role) 
+    /**
+     * إنشاء مستخدم جديد
+     */
+    public function create(string $username, string $email, string $password, string $role): void
     {
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
         $stm = App::db()->prepare(
-            "INSERT INTO users(username, email, password, role) VALUES(:username, :email, :password, :role)"
+            "INSERT INTO users(username, email, password, role)
+             VALUES(:username, :email, :password, :role)"
         );
+
         $stm->execute([
             'username' => $username,
-            'email' => $email,
+            'email'    => $email,
             'password' => $hashedPassword,
-            'role' => $role
+            'role'     => $role
         ]);
     }
 
-    function update($id, $username, $email, $password, $role) 
+    /**
+     * تحديث بيانات مستخدم
+     */
+    public function update(int $id, string $username, string $email, ?string $password, string $role): void
     {
-        if ($password && $password !== '') {
+        if ($password !== null && $password !== '') {
             $stm = App::db()->prepare(
                 "UPDATE users SET username = :username, email = :email, password = :password, role = :role WHERE id = :id"
             );
+
             $stm->execute([
                 'username' => $username,
-                'email' => $email,
+                'email'    => $email,
                 'password' => password_hash($password, PASSWORD_DEFAULT),
-                'role' => $role,
-                'id' => $id
+                'role'     => $role,
+                'id'       => $id
             ]);
         } else {
             $stm = App::db()->prepare(
                 "UPDATE users SET username = :username, email = :email, role = :role WHERE id = :id"
             );
+
             $stm->execute([
                 'username' => $username,
-                'email' => $email,
-                'role' => $role,
-                'id' => $id
+                'email'    => $email,
+                'role'     => $role,
+                'id'       => $id
             ]);
         }
     }
 
-    function delete($id) 
+    /**
+     * حذف مستخدم بواسطة المعرف
+     */
+    public function delete(int $id): void
     {
         $stm = App::db()->prepare("DELETE FROM users WHERE id = :id");
         $stm->execute(['id' => $id]);
     }
-    
-    function deleteAll()
+
+    /**
+     * حذف كل المستخدمين
+     */
+    public function deleteAll(): void
     {
         $stm = App::db()->prepare("DELETE FROM users");
         $stm->execute();
     }
-
 }
