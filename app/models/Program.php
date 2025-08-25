@@ -3,60 +3,106 @@
 namespace App\Models;
 
 use App\Core\App;
+use PDO;
 
-class Program 
+/**
+ * كلاس Program لإدارة برامج المنظمة
+ */
+class Program
 {
-
-    function all() 
+    /**
+     * جلب جميع البرامج
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public function all(): array
     {
         $stm = App::db()->prepare("SELECT * FROM programs");
         $stm->execute();
-        return $stm->fetchAll();
+
+        return $stm->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    function find($id) 
+    /**
+     * جلب برنامج معين بالمعرف
+     *
+     * @param int $id معرف البرنامج
+     * @return array<string, mixed>|false
+     */
+    public function find(int $id): array|false
     {
         $stm = App::db()->prepare("SELECT * FROM programs WHERE program_id = :id");
         $stm->execute(['id' => $id]);
-        return $stm->fetch();
+
+        return $stm->fetch(PDO::FETCH_ASSOC);
     }
 
-    function create($title, $descrip, $start_date, $end_date, $type, $region) 
-    {
-        $stm = App::db()->prepare("INSERT INTO programs(title, descrip, startt_date, end_date, typ, region)
-                                   VALUES(:title, :descrip, :startt_date, :end_date, :typ, :region)");
+    /**
+     * إنشاء برنامج جديد
+     */
+    public function create(
+        string $title,
+        string $descrip,
+        string $startDate,
+        string $endDate,
+        string $type,
+        string $region
+    ): void {
+        $stm = App::db()->prepare(
+            "INSERT INTO programs (title, descrip, startt_date, end_date, typ, region)
+             VALUES (:title, :descrip, :startt_date, :end_date, :typ, :region)"
+        );
+
         $stm->execute([
-            'title' => $title,
-            'descrip' => $descrip,
-            'startt_date' => $start_date,
-            'end_date' => $end_date,
-            'typ' => $type,
-            'region' => $region
+            'title'       => $title,
+            'descrip'     => $descrip,
+            'startt_date' => $startDate,
+            'end_date'    => $endDate,
+            'typ'         => $type,
+            'region'      => $region
         ]);
     }
 
-    function update($id, $title, $descrip, $start_date, $end_date, $type, $region) 
-    {
-        $stm = App::db()->prepare("UPDATE programs
-                                   SET title = :title,
-                                       descrip = :descrip,
-                                       startt_date = :startt_date,
-                                       end_date = :end_date,
-                                       typ = :typ,
-                                       region = :region
-                                   WHERE program_id = :id");
+    /**
+     * تحديث برنامج موجود
+     */
+    public function update(
+        int $id,
+        string $title,
+        string $descrip,
+        string $startDate,
+        string $endDate,
+        string $type,
+        string $region
+    ): bool {
+        $stm = App::db()->prepare(
+            "UPDATE programs
+             SET title = :title,
+                 descrip = :descrip,
+                 startt_date = :startt_date,
+                 end_date = :end_date,
+                 typ = :typ,
+                 region = :region
+             WHERE program_id = :id"
+        );
+
         return $stm->execute([
-            'title' => $title,
-            'descrip' => $descrip,
-            'startt_date' => $start_date,
-            'end_date' => $end_date,
-            'typ' => $type,
-            'region' => $region,
-            'id' => $id
+            'id'          => $id,
+            'title'       => $title,
+            'descrip'     => $descrip,
+            'startt_date' => $startDate,
+            'end_date'    => $endDate,
+            'typ'         => $type,
+            'region'      => $region
         ]);
     }
 
-    function delete($id) 
+    /**
+     * حذف برنامج
+     *
+     * @param int $id معرف البرنامج
+     */
+    public function delete(int $id): void
     {
         $stm = App::db()->prepare("DELETE FROM programs WHERE program_id = :id");
         $stm->execute(['id' => $id]);
