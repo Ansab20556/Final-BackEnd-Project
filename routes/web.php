@@ -1,7 +1,7 @@
 <?php
 
 use App\Controllers\ProgramController;
-use App\Controllers\AuthController;
+
 use App\Controllers\UserController;
 use App\Controllers\OrganizationController;
 use App\Controllers\DonationController;
@@ -62,16 +62,6 @@ $router->get('/oraganization-mvc/public/donations/{id}/edit', [DonationControlle
 $router->put('/oraganization-mvc/public/donations/{id}', [DonationController::class, 'update']);   // تحديث (صح هنا بدون /update)
 $router->delete('/oraganization-mvc/public/donations/{id}', [DonationController::class, 'delete']);
 
-/**
- * ======================
- * Auth / API Routes
- * ======================
- */
-$router->post('/oraganization-mvc/public/api/login', [AuthController::class, 'login']);
-
-// Workfields API
-$router->get('/oraganization-mvc/public/api/workfields', [ProgramController::class, 'apiIndex']);
-$router->delete('/oraganization-mvc/public/api/workfields/{id}', [ProgramController::class, 'apiDelete']);
 
 // Uers API
 // API routes
@@ -106,3 +96,6 @@ $router->post('/oraganization-mvc/public/api/v1/messages', [MessageController::c
 $router->put('/oraganization-mvc/public/api/v1/messages/{id}', [MessageController::class, 'apiUpdate']);
 $router->delete('/oraganization-mvc/public/api/v1/messages/{id}', [MessageController::class, 'apiDelete']);
 $router->delete('/oraganization-mvc/public/api/v1/messages', [MessageController::class, 'apiDeleteAll']);
+
+
+$router->post('/oraganization-mvc/public/api/v1/login', [UserController::class, 'apiLogin']);
