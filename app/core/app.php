@@ -7,14 +7,18 @@ use PDOException;
 
 final class App
 {
+    /**
+     * كائن PDO ثابت لإعادة الاستخدام
+     */
     private static ?PDO $pdo = null;
 
+    /**
+     * تهيئة الاتصال بقاعدة البيانات
+     */
     public static function init(): void
     {
-        if (self::$pdo === null) 
-        {
-            try 
-            {
+        if (self::$pdo === null) {
+            try {
                 self::$pdo = new PDO(
                     'mysql:host=localhost;dbname=wfp_portal;charset=utf8',
                     'root',
@@ -24,20 +28,20 @@ final class App
                         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                     ]
                 );
-                
-            } catch (PDOException $e) 
-            {
+            } catch (PDOException $e) {
                 die("Database connection failed: " . $e->getMessage());
             }
         }
     }
 
+    /**
+     * إرجاع كائن PDO
+     */
     public static function db(): PDO
     {
-        if (self::$pdo === null) 
-            {
-                self::init();
-            }
+        if (self::$pdo === null) {
+            self::init();
+        }
 
         return self::$pdo;
     }
