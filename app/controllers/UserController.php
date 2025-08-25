@@ -188,4 +188,38 @@ class UserController
         $user->create($data['username'], $data['email'], $data['password'], $data['role'] ?? 'user');
         echo json_encode(['success' => true]);
     }
+    
+    function apiLogin() 
+    {
+        header('Content-Type: application/json');
+        $json = file_get_contents("php://input");
+        $data = json_decode($json, true);
+
+        $email = $data['email'] ?? '';
+        $password = $data['password'] ?? '';
+
+        if (empty($email) || empty($password)) 
+            {
+                http_response_code(400);
+                echo json_encode(['error' => 'الرجاء إدخال البريد وكلمة المرور']);
+                return;
+            }
+
+        $user = new \App\Models\User();
+        $u = $user->findByEmail($email);
+
+        if (!$u || !password_verify($password, $u['password'])) 
+            {
+                http_response_code(401);
+                echo json_encode(['error' => 'البريد أو كلمة المرور غير صحيحة']);
+                return;
+            }
+
+        // ترجع فقط بيانات المستخدم مع الدور
+        echo json_encode([
+            'id' => $u['id'],
+            'username' => $u['username'],
+            'role' => $u['role']
+        ]);
+    }
 }
