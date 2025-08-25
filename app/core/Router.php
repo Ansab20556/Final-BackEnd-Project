@@ -1,43 +1,67 @@
 <?php
+
 namespace App\Core;
 
+/**
+ * كلاس Router لإدارة التوجيه بين المسارات
+ */
 final class Router
 {
+    /**
+     * مصفوفة المسارات لكل Method
+     *
+     * @var array<string, array<string, callable|array>>
+     */
     private array $routes = [
-        'GET' => [],
-        'POST' => [],
-        'PUT' => [],
+        'GET'    => [],
+        'POST'   => [],
+        'PUT'    => [],
         'DELETE' => []
     ];
 
-    public function get(string $path, $handler)
+    /**
+     * إضافة مسار GET
+     */
+    public function get(string $path, callable|array $handler): void
     {
         $this->routes['GET'][$this->norm($path)] = $handler;
     }
 
-    public function post(string $path, $handler)
+    /**
+     * إضافة مسار POST
+     */
+    public function post(string $path, callable|array $handler): void
     {
         $this->routes['POST'][$this->norm($path)] = $handler;
     }
 
-    public function put(string $path, $handler)
+    /**
+     * إضافة مسار PUT
+     */
+    public function put(string $path, callable|array $handler): void
     {
         $this->routes['PUT'][$this->norm($path)] = $handler;
     }
 
-    public function delete(string $path, $handler)
+    /**
+     * إضافة مسار DELETE
+     */
+    public function delete(string $path, callable|array $handler): void
     {
         $this->routes['DELETE'][$this->norm($path)] = $handler;
     }
 
-    public function dispatch(string $method, string $uri)
+    /**
+     * تنفيذ التوجيه حسب Method و URI
+     */
+    public function dispatch(string $method, string $uri): void
     {
         $path = $this->norm(parse_url($uri, PHP_URL_PATH) ?: '/');
 
-        // ✅ دعم Method Override في الفورم (POST مع hidden _method)
+        // دعم Method Override في الفورم (POST مع hidden _method)
         if ($method === 'POST' && isset($_POST['_method'])) {
             $override = strtoupper($_POST['_method']);
-            if (in_array($override, ['PUT', 'DELETE'])) {
+            if (in_array($override, ['PUT', 'DELETE'], true)) {
                 $method = $override;
             }
         }
@@ -52,11 +76,10 @@ final class Router
                 if (is_array($handler)) {
                     [$class, $action] = $handler;
                     (new $class())->$action(...array_values($params));
-                } 
-                else 
-                    {
-                        $handler(...array_values($params));
-                    }
+                } else {
+                    $handler(...array_values($params));
+                }
+
                 return;
             }
         }
@@ -66,9 +89,12 @@ final class Router
         exit;
     }
 
-    private function norm(string $p): string
+    /**
+     * توحيد شكل المسار (بدون / في النهاية)
+     */
+    private function norm(string $path): string
     {
-        $p = rtrim($p, '/');
-        return $p === '' ? '/' : $p;
+        $path = rtrim($path, '/');
+        return $path === '' ? '/' : $path;
     }
 }
