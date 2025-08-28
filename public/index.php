@@ -1,6 +1,11 @@
 <?php
 // index.php (أول الملف)
-header("Access-Control-Allow-Origin: http://localhost:5173"); // أو * للتجربة
+// session_start();
+/**
+ *  اذا انا اشتي ابدأ اختبر الملف بالباك اند فقط 
+ * بعمل تعليق لهذين الاربعه الاسطر واشتغل طبيعي عالروابط الموجوده في ملف الويب 
+ *  */
+header("Access-Control-Allow-Origin: http://localhost:5173"); 
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Content-Type: application/json; charset=UTF-8");
