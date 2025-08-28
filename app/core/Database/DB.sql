@@ -113,3 +113,6 @@ CREATE TABLE messages (
     content TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+
+ALTER TABLE messages ADD COLUMN is_new TINYINT(1) DEFAULT 1;
