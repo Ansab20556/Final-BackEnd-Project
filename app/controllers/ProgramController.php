@@ -163,10 +163,10 @@ class ProgramController
 
         $programObj->create(
             $data['title'] ?? '',
-            $data['desc'] ?? '',
-            $data['start_date'] ?? '',
+            $data['descrip'] ?? '',
+            $data['startt_date'] ?? '',
             $data['end_date'] ?? '',
-            $data['type'] ?? '',
+            $data['typ'] ?? '',
             $data['region'] ?? ''
         );
 
@@ -186,10 +186,10 @@ class ProgramController
         $programObj->update(
             $id,
             $data['title'] ?? '',
-            $data['desc'] ?? '',
-            $data['start_date'] ?? '',
+            $data['descrip'] ?? '',
+            $data['startt_date'] ?? '',
             $data['end_date'] ?? '',
-            $data['type'] ?? '',
+            $data['typ'] ?? '',
             $data['region'] ?? ''
         );
 
