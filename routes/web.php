@@ -94,6 +94,8 @@ $router->post('/oraganization-mvc/public/api/v1/messages', [MessageController::c
 $router->put('/oraganization-mvc/public/api/v1/messages/{id}', [MessageController::class, 'apiUpdate']);
 $router->delete('/oraganization-mvc/public/api/v1/messages/{id}', [MessageController::class, 'apiDelete']);
 $router->delete('/oraganization-mvc/public/api/v1/messages', [MessageController::class, 'apiDeleteAll']);
+$router->put('/oraganization-mvc/public/api/v1/messages/mark-read', [MessageController::class, 'apiMarkRead']);
 
 /* Login API */
 $router->post('/oraganization-mvc/public/api/v1/login', [UserController::class, 'apiLogin']);
+$router->post('/oraganization-mvc/public/api/v1/logout', [UserController::class, 'apiLogout']);
