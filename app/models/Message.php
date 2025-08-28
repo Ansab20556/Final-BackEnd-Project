@@ -44,6 +44,7 @@ class Message
     /**
      * إنشاء رسالة جديدة
      */
+
     public function create(
         string $name,
         string $email,
@@ -51,8 +52,8 @@ class Message
         string $created_at
     ): void {
         $stm = App::db()->prepare(
-            "INSERT INTO messages (name, email, content, created_at)
-            VALUES (:name, :email, :content, :created_at)"
+            "INSERT INTO messages (name, email, content, created_at, is_new)
+            VALUES (:name, :email, :content, :created_at, 1)"
         );
 
         $stm->execute([
@@ -100,4 +101,13 @@ class Message
         );
         $stm->execute(['id' => $id]);
     }
+
+    /**
+     * وضع كل الرسائل الجديدة كـ مقروءة
+     */
+    public function markAllRead(): void {
+        $stm = App::db()->prepare("UPDATE messages SET is_new = 0 WHERE is_new = 1");
+        $stm->execute();
+    }
+
 }
