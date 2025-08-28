@@ -200,4 +200,17 @@ class MessageController
 
         echo json_encode(["status" => "success"]);
     }
+
+    /**
+     * وضع كل الرسائل الجديدة كمقروءة عبر API
+     */
+    public function apiMarkRead(): void
+    {
+        header("Content-Type: application/json; charset=UTF-8");
+
+        $message = new Message();
+        $message->markAllRead();
+
+        echo json_encode(["status" => "success"]);
+    }
 }
